@@ -18,15 +18,20 @@ const CHAR = {
   " ": "000000"
 };
 
+// ===== CONFIG =====
+// Read UTC offset from environment variable, default to 1
+const UTC_OFFSET = parseInt(process.env.UTC_OFFSET || "1", 10);
+
 let currentIndex = 0;
 
 // Main /time endpoint — returns one 8-bit character per GET
 app.get("/time", (req, res) => {
   const now = new Date();
 
-  // UTC+1 adjustment
-  let hours = now.getUTCHours() + 1;
+  // Apply UTC offset
+  let hours = now.getUTCHours() + UTC_OFFSET;
   if (hours >= 24) hours -= 24;
+  if (hours < 0) hours += 24;
   hours = String(hours).padStart(2, "0");
 
   const mins    = String(now.getUTCMinutes()).padStart(2, "0");
@@ -53,7 +58,6 @@ app.get("/time", (req, res) => {
 // Optional reset endpoint
 app.get("/reset", (req, res) => {
   currentIndex = 0;
-  // Send JSON response
   res.json({ value: "00000000" });
 });
 
