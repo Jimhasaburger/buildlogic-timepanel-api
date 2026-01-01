@@ -29,8 +29,10 @@ app.get("/time", (req, res) => {
   if (hours >= 24) hours -= 24;
   hours = String(hours).padStart(2, "0");
 
-  const mins  = String(now.getUTCMinutes()).padStart(2, "0");
-  const text = `${hours}:${mins}`;
+  const mins    = String(now.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(now.getUTCSeconds()).padStart(2, "0");
+
+  const text = `${hours}:${mins}:${seconds}`; // HH:MM:SS
 
   const char = text[currentIndex] || " ";
   const charBits = CHAR[char] || "000000";
