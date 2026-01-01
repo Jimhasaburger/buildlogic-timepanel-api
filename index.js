@@ -23,7 +23,12 @@ let currentIndex = 0;
 // Main /time endpoint — returns one 8-bit character per GET
 app.get("/time", (req, res) => {
   const now = new Date();
-  const hours = String(now.getUTCHours()).padStart(2, "0");
+
+  // UTC+1 adjustment
+  let hours = now.getUTCHours() + 1;
+  if (hours >= 24) hours -= 24;
+  hours = String(hours).padStart(2, "0");
+
   const mins  = String(now.getUTCMinutes()).padStart(2, "0");
   const text = `${hours}:${mins}`;
 
