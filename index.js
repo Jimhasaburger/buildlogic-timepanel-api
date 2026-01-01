@@ -1,7 +1,8 @@
+// Step 0 — import express
 const express = require("express");
-const app = express();
+const app = express(); // THIS creates the app object
 
-// 6-bit Build Logic character map for 0-9 and colon
+// 6-bit Build Logic character map
 const CHAR = {
   "0": "100100",
   "1": "011011",
@@ -17,39 +18,36 @@ const CHAR = {
   " ": "000000"
 };
 
-let currentIndex = 0; // which character to send next
+let currentIndex = 0;
 
+// Main /time endpoint — returns one 8-bit character per GET
 app.get("/time", (req, res) => {
   const now = new Date();
   const hours = String(now.getUTCHours()).padStart(2, "0");
   const mins  = String(now.getUTCMinutes()).padStart(2, "0");
+  const text = `${hours}:${mins}`;
 
-  const text = `${hours}:${mins}`; // HH:MM
-
-  // Get character for this request
   const char = text[currentIndex] || " ";
   const charBits = CHAR[char] || "000000";
 
-  // 7th bit = RESET flag (1 for first char)
+  // bit 6 = RESET flag
   const resetBit = currentIndex === 0 ? "1" : "0";
 
-  // 8-bit response: [bit7=0][bit6=RESET][bits5-0=char]
-  const response = "0" + resetBit + charBits;
+  const response = "0" + resetBit + charBits; // 8-bit: [unused][RESET][char]
 
-  // Advance index
+  // increment index
   currentIndex++;
-  if (currentIndex >= text.length) {
-    currentIndex = 0; // wrap back to start
-  }
+  if (currentIndex >= text.length) currentIndex = 0;
 
-  res.send(response); // one character + RESET flag
+  res.send(response);
 });
 
-// Optional: reset server index manually
+// Optional reset endpoint
 app.get("/reset", (req, res) => {
   currentIndex = 0;
   res.send("00000000");
 });
 
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running"));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
