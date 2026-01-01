@@ -39,13 +39,15 @@ app.get("/time", (req, res) => {
   currentIndex++;
   if (currentIndex >= text.length) currentIndex = 0;
 
-  res.send(response);
+  // Send JSON response
+  res.json({ value: response });
 });
 
 // Optional reset endpoint
 app.get("/reset", (req, res) => {
   currentIndex = 0;
-  res.send("00000000");
+  // Send JSON response
+  res.json({ value: "00000000" });
 });
 
 // Start server
